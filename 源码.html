@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>暖心礼物❤️</title>
+    <!-- Umami 统计代码 -->
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="75d9443c-d127-474a-8083-a5f07aca5b8c"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -430,37 +432,27 @@
     </div>
 
     <script>
+        // 页面元素
         const noticePage = document.getElementById('noticePage');
         const giftPage = document.getElementById('giftPage');
+        const messagesPage = document.getElementById('messagesPage');
         const countdownElement = document.getElementById('countdown');
         const enterBtn = document.getElementById('enterBtn');
+        const giftBox = document.getElementById('giftBox');
+        const messagesContainer = document.getElementById('messagesContainer');
+        const messageCounter = document.getElementById('messageCounter');
+        const backBtn = document.getElementById('backBtn');
         
+        // 倒计时变量
         let countdown = 5;
         let countdownInterval;
         
-        function startCountdown() {
-            countdownInterval = setInterval(() => {
-                countdown--;
-                countdownElement.textContent = countdown;
-                
-                if (countdown <= 0) {
-                    clearInterval(countdownInterval);
-                    enterBtn.textContent = "进入网站";
-                    enterBtn.classList.add('active');
-                    enterBtn.disabled = false;
-                }
-            }, 1000);
-        }
+        // 消息相关变量
+        let isOpened = false;
+        let messageInterval;
+        let currentMessageIndex = 0;
         
-        enterBtn.addEventListener('click', function() {
-            noticePage.style.display = 'none';
-            giftPage.style.display = 'flex';
-        });
-        
-        window.addEventListener('load', function() {
-            startCountdown();
-        });
-        
+        // 安慰话语数组
         const comfortingMessages = [
             "你并不孤单，我在这里陪着你",
             "每一天都是新的开始，明天会更好",
@@ -523,16 +515,29 @@
             "即使感到孤独，也要记得有人在乎你",
             "你的每一步都在向前，无论大小"
         ];
+
+        // 倒计时功能
+        function startCountdown() {
+            countdownInterval = setInterval(() => {
+                countdown--;
+                countdownElement.textContent = countdown;
+                
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    enterBtn.textContent = "进入网站";
+                    enterBtn.classList.add('active');
+                    enterBtn.disabled = false;
+                }
+            }, 1000);
+        }
         
-        const messagesPage = document.getElementById('messagesPage');
-        const giftBox = document.getElementById('giftBox');
-        const messagesContainer = document.getElementById('messagesContainer');
-        const messageCounter = document.getElementById('messageCounter');
-        const backBtn = document.getElementById('backBtn');
-        let isOpened = false;
-        let messageInterval;
-        let currentMessageIndex = 0;
+        // 进入按钮点击事件
+        enterBtn.addEventListener('click', function() {
+            noticePage.style.display = 'none';
+            giftPage.style.display = 'flex';
+        });
         
+        // 礼物盒点击事件
         giftBox.addEventListener('click', function() {
             if (isOpened) return;
             isOpened = true;
@@ -556,6 +561,7 @@
             }, 500);
         });
         
+        // 返回按钮点击事件
         backBtn.addEventListener('click', function() {
             clearInterval(messageInterval);
             
@@ -572,15 +578,15 @@
                     giftPage.style.transform = 'translateY(0)';
                     isOpened = false;
                     currentMessageIndex = 0;
-                    messageCounter.textContent = "1 / 60";
+                    messageCounter.textContent = "1 / " + comfortingMessages.length;
                 }, 100);
             }, 800);
         });
         
+        // 开始消息轮播
         function startMessageRotation() {
             createMessage();
             
-            // 将间隔时间从1000ms增加到2000ms，使每条消息停留2秒
             messageInterval = setInterval(() => {
                 const currentMessage = document.querySelector('.message.active');
                 if (currentMessage) {
@@ -594,14 +600,15 @@
                 
                 currentMessageIndex = (currentMessageIndex + 1) % comfortingMessages.length;
                 
-                messageCounter.textContent = `${currentMessageIndex + 1} / ${comfortingMessages.length}`;
+                messageCounter.textContent = (currentMessageIndex + 1) + " / " + comfortingMessages.length;
                 
                 setTimeout(() => {
                     createMessage();
                 }, 300);
-            }, 2000); // 修改这里：从1000改为2000
+            }, 2000); // 每条消息停留2秒
         }
         
+        // 创建消息元素
         function createMessage() {
             const messageElement = document.createElement('div');
             messageElement.className = 'message';
@@ -613,6 +620,13 @@
                 messageElement.classList.add('active');
             }, 100);
         }
+        
+        // 页面加载完成后开始倒计时
+        window.addEventListener('load', function() {
+            startCountdown();
+            // 初始化消息计数器
+            messageCounter.textContent = "1 / " + comfortingMessages.length;
+        });
     </script>
 </body>
 </html>
