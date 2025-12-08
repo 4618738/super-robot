@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>暖心礼物❤️</title>
-    <!-- Umami 统计追踪代码（正常生效） -->
+    <!-- Umami 统计追踪代码（核心，必须保留） -->
     <script defer src="https://cloud.umami.is/script.js" data-website-id="75d9443c-d127-474a-8083-a5f07aca5b8c"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -90,6 +90,19 @@
             .version { font-size: 0.85rem; }
             .author { font-size: 0.65rem; }
         }
+        /* 访问量加载动画（优化体验，可选保留） */
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #7a5c4d;
+            border-top-color: transparent;
+            border-radius: 50%;
+            margin-left: 6px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -126,7 +139,9 @@
         </div>
         <!-- 礼物页专属版本号（初始隐藏，进入后显示） -->
         <div class="version-info" id="versionGift">
-            <div class="visitor-count" id="visitorCount">总访问量：加载中... | 今日：加载中...</div>
+            <div class="visitor-count" id="visitorCount">
+                总访问量：<span class="loading">加载中...</span> | 今日：<span class="loading">加载中...</span>
+            </div>
             <div class="version">当前版本号ⅴ1.1.1</div>
             <div class="author">大魔王.by</div>
         </div>
@@ -139,7 +154,9 @@
         <button class="back-btn" id="backBtn">返回礼物盒</button>
         <!-- 消息页专属版本号（初始隐藏，进入后显示） -->
         <div class="version-info" id="versionMsg">
-            <div class="visitor-count" id="visitorCountMsg">总访问量：加载中... | 今日：加载中...</div>
+            <div class="visitor-count" id="visitorCountMsg">
+                总访问量：<span class="loading">加载中...</span> | 今日：<span class="loading">加载中...</span>
+            </div>
             <div class="version">当前版本号ⅴ1.1.1</div>
             <div class="author">大魔王.by</div>
         </div>
@@ -235,25 +252,35 @@
             "你的每一步都在向前，无论大小"
         ];
 
-        // 实时访问量获取（和Umami同步）
-        async function getUmamiVisitorCount() {
-            const websiteId = "75d9443c-d127-474a-8083-a5f07aca5b8c";
-            const apiUrl = `https://cloud.umami.is/api/website/${websiteId}/stats`;
-            
-            try {
-                const response = await fetch(apiUrl, { method: 'GET', headers: { 'Accept': 'application/json' } });
-                if (!response.ok) throw new Error('访问量加载失败');
-                
-                const data = await response.json();
-                const total = data.stats.total || 0;
-                const today = data.stats.today || 0;
-                
-                visitorCount.textContent = `总访问量：${total} | 今日：${today}`;
-                visitorCountMsg.textContent = `总访问量：${total} | 今日：${today}`;
-            } catch (e) {
-                visitorCount.textContent = `总访问量：-- | 今日：--`;
-                visitorCountMsg.textContent = `总访问量：-- | 今日：--`;
+        // 🌟 核心修改：用Umami全局对象拿访问量（无跨域，自动加载）
+        function getUmamiVisitorCount() {
+            // 兜底：3秒没加载完显示--，避免一直加载中
+            const loadTimer = setTimeout(() => {
+                visitorCount.innerHTML = `总访问量：-- | 今日：--`;
+                visitorCountMsg.innerHTML = `总访问量：-- | 今日：--`;
+            }, 3000);
+
+            // 方法1：监听Umami脚本加载完成（优先触发）
+            window.addEventListener('umami.loaded', () => {
+                clearTimeout(loadTimer); // 取消兜底
+                updateVisitorNum(); // 更新访问量
+            });
+
+            // 方法2：主动检测Umami是否已加载（防止监听失败，双重保障）
+            if (window.umami && window.umami.stats) {
+                clearTimeout(loadTimer);
+                updateVisitorNum();
             }
+        }
+
+        // 单独抽离：更新访问量显示（复用逻辑，更清晰）
+        function updateVisitorNum() {
+            const stats = window.umami.stats; // 从Umami全局对象拿数据
+            const totalVisits = stats.total || 0; // 总访问量
+            const todayVisits = stats.today || 0; // 今日访问量
+            // 替换内容，去掉加载动画
+            visitorCount.innerHTML = `总访问量：${totalVisits} | 今日：${todayVisits}`;
+            visitorCountMsg.innerHTML = `总访问量：${totalVisits} | 今日：${todayVisits}`;
         }
 
         // 倒计时功能（彻底修复，100%生效）
@@ -312,7 +339,7 @@
             noticePage.style.display = 'none';
             giftPage.style.display = 'flex';
             versionGift.style.display = 'block'; // 只在礼物页显示版本号
-            getUmamiVisitorCount(); // 刷新访问量
+            getUmamiVisitorCount(); // 触发访问量加载
         });
 
         // 页面切换事件：礼物页 → 消息页
@@ -358,8 +385,7 @@
         window.onload = () => {
             startCountdown();
             messageCounter.innerText = `1 / ${comfortingMessages.length}`;
-            getUmamiVisitorCount();
-            setInterval(getUmamiVisitorCount, 180000); // 每3分钟刷新访问量
+            // 不用提前调用访问量加载，进入礼物页再触发，更高效
         };
     </script>
 </body>
