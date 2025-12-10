@@ -71,38 +71,24 @@
             .subtitle { font-size: 1rem; }
             .gift-container { width: 120px; height: 120px; }
             .message { font-size: 1.1rem; max-width: 350px; padding: 15px 25px; margin: 0 15px; }
+            .message i {
             .message i { font-size: 1.3rem; }
             .back-btn { top: 15px; right: 15px; padding: 8px 16px; font-size: 0.9rem; }
         }
         
-        /* 版本号样式（默认隐藏，仅对应页面显示） */
+        /* 版本号样式（删除访问量相关样式，保留核心版本+作者） */
         .version-info { 
             position: fixed; bottom: 20px; right: 20px; text-align: right; 
             color: #7a5c4d; z-index: 9; display: none; /* 初始强制隐藏 */
         }
-        .visitor-count { font-size: 0.9rem; margin-bottom: 2px; opacity: 0.95; }
         .version { font-size: 0.95rem; margin-bottom: 2px; }
         .author { font-size: 0.75rem; opacity: 0.9; }
-        /* 移动端版本号适配 */
+        /* 移动端版本号适配（同步删除访问量样式） */
         @media (max-width: 480px) {
             .version-info { bottom: 60px; right: 15px; }
-            .visitor-count { font-size: 0.8rem; }
             .version { font-size: 0.85rem; }
             .author { font-size: 0.65rem; }
         }
-        /* 访问量加载动画（优化体验，可选保留） */
-        .loading::after {
-            content: '';
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border: 2px solid #7a5c4d;
-            border-top-color: transparent;
-            border-radius: 50%;
-            margin-left: 6px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -137,12 +123,9 @@
                 <p>制作者大魔王 希望这些话语能给你带来一丝温暖</p>
             </div>
         </div>
-        <!-- 礼物页专属版本号（初始隐藏，进入后显示） -->
+        <!-- 礼物页专属版本号（删除访问量显示，版本号更新为v1.1.2） -->
         <div class="version-info" id="versionGift">
-            <div class="visitor-count" id="visitorCount">
-                总访问量：<span class="loading">加载中...</span> | 今日：<span class="loading">加载中...</span>
-            </div>
-            <div class="version">当前版本号ⅴ1.1.1</div>
+            <div class="version">当前版本号 v1.1.2</div>
             <div class="author">大魔王.by</div>
         </div>
     </div>
@@ -152,18 +135,15 @@
         <div class="messages-container" id="messagesContainer"></div>
         <div class="message-counter" id="messageCounter">1 / 60</div>
         <button class="back-btn" id="backBtn">返回礼物盒</button>
-        <!-- 消息页专属版本号（初始隐藏，进入后显示） -->
+        <!-- 消息页专属版本号（删除访问量显示，版本号更新为v1.1.2） -->
         <div class="version-info" id="versionMsg">
-            <div class="visitor-count" id="visitorCountMsg">
-                总访问量：<span class="loading">加载中...</span> | 今日：<span class="loading">加载中...</span>
-            </div>
-            <div class="version">当前版本号ⅴ1.1.1</div>
+            <div class="version">当前版本号 v1.1.2</div>
             <div class="author">大魔王.by</div>
         </div>
     </div>
 
     <script>
-        // 页面核心元素
+        // 页面核心元素（删除访问量相关元素获取）
         const noticePage = document.getElementById('noticePage');
         const giftPage = document.getElementById('giftPage');
         const messagesPage = document.getElementById('messagesPage');
@@ -176,8 +156,6 @@
         // 版本号元素（分页面单独控制，彻底隔离公告页）
         const versionGift = document.getElementById('versionGift');
         const versionMsg = document.getElementById('versionMsg');
-        const visitorCount = document.getElementById('visitorCount');
-        const visitorCountMsg = document.getElementById('visitorCountMsg');
         
         // 倒计时核心变量（三重加固，确保不失效）
         let countdown = 5;
@@ -252,37 +230,6 @@
             "你的每一步都在向前，无论大小"
         ];
 
-        // 🌟 核心修改：用Umami全局对象拿访问量（无跨域，自动加载）
-        function getUmamiVisitorCount() {
-            // 兜底：3秒没加载完显示--，避免一直加载中
-            const loadTimer = setTimeout(() => {
-                visitorCount.innerHTML = `总访问量：-- | 今日：--`;
-                visitorCountMsg.innerHTML = `总访问量：-- | 今日：--`;
-            }, 3000);
-
-            // 方法1：监听Umami脚本加载完成（优先触发）
-            window.addEventListener('umami.loaded', () => {
-                clearTimeout(loadTimer); // 取消兜底
-                updateVisitorNum(); // 更新访问量
-            });
-
-            // 方法2：主动检测Umami是否已加载（防止监听失败，双重保障）
-            if (window.umami && window.umami.stats) {
-                clearTimeout(loadTimer);
-                updateVisitorNum();
-            }
-        }
-
-        // 单独抽离：更新访问量显示（复用逻辑，更清晰）
-        function updateVisitorNum() {
-            const stats = window.umami.stats; // 从Umami全局对象拿数据
-            const totalVisits = stats.total || 0; // 总访问量
-            const todayVisits = stats.today || 0; // 今日访问量
-            // 替换内容，去掉加载动画
-            visitorCount.innerHTML = `总访问量：${totalVisits} | 今日：${todayVisits}`;
-            visitorCountMsg.innerHTML = `总访问量：${totalVisits} | 今日：${todayVisits}`;
-        }
-
         // 倒计时功能（彻底修复，100%生效）
         function startCountdown() {
             // 强制重置状态，避免任何冲突
@@ -339,7 +286,6 @@
             noticePage.style.display = 'none';
             giftPage.style.display = 'flex';
             versionGift.style.display = 'block'; // 只在礼物页显示版本号
-            getUmamiVisitorCount(); // 触发访问量加载
         });
 
         // 页面切换事件：礼物页 → 消息页
@@ -385,7 +331,6 @@
         window.onload = () => {
             startCountdown();
             messageCounter.innerText = `1 / ${comfortingMessages.length}`;
-            // 不用提前调用访问量加载，进入礼物页再触发，更高效
         };
     </script>
 </body>
