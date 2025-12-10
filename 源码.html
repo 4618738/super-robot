@@ -4,14 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>暖心礼物❤️</title>
-    <!-- Umami 统计追踪代码（核心，必须保留） -->
     <script defer src="https://cloud.umami.is/script.js" data-website-id="75d9443c-d127-474a-8083-a5f07aca5b8c"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: linear-gradient(135deg, #ffafbd, #ffc3a0); min-height: 100vh; overflow: hidden; color: #5a3e36; transition: background 3s ease; }
+        body { background: linear-gradient(135deg, #ffafbd, #ffc3a0); min-height: 100vh; overflow: hidden; color: #5a3e36; }
         
-        /* 公告页（默认显示，无版本号） */
+        /* 星光背景 */
+        .star { position: absolute; background: rgba(255, 255, 255, 0.8); border-radius: 50%; pointer-events: none; animation: twinkle infinite alternate; z-index: 0; }
+        @keyframes twinkle { 0% { opacity: 0.2; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
+        
+        /* 公告页（默认显示） */
         .notice-page { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 30px; text-align: center; background: rgba(255, 255, 255, 0.9); z-index: 100; position: relative; }
         .notice-content { max-width: 600px; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
         .notice-title { font-size: 2.2rem; margin-bottom: 20px; color: #e74c3c; }
@@ -20,39 +23,57 @@
         .countdown { font-size: 1.5rem; margin-bottom: 30px; color: #e74c3c; font-weight: bold; }
         .enter-btn { background: #e74c3c; color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; opacity: 0.5; pointer-events: none; }
         .enter-btn.active { opacity: 1; pointer-events: auto; }
-        .enter-btn:hover { background: #c0392b; transform: translateY(-2px); }
+        .enter-btn:hover { background: #c0392b; transform: translateY(-2px); box-shadow: 0 8px 15px rgba(231, 76, 60, 0.3); }
         
         /* 礼物页（默认隐藏） */
-        .gift-page { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; transition: opacity 0.8s ease, transform 0.8s ease; }
-        .container { text-align: center; max-width: 800px; width: 100%; }
+        .gift-page { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; position: relative; }
+        .container { text-align: center; max-width: 800px; width: 100%; position: relative; z-index: 1; }
         h1 { font-size: 2.8rem; margin-bottom: 10px; color: #8b4513; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); }
         .subtitle { font-size: 1.2rem; margin-bottom: 40px; color: #7a5c4d; }
-        .gift-container { position: relative; width: 200px; height: 200px; margin: 0 auto 50px; cursor: pointer; transition: transform 0.3s ease; animation: float 3s ease-in-out infinite; }
-        .gift-container:hover { transform: scale(1.05); }
-        .gift-box { width: 100%; height: 100%; background: linear-gradient(135deg, #e74c3c, #c0392b); border-radius: 10px; position: relative; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); transition: all 0.5s ease; }
-        .gift-box::before { content: ''; position: absolute; width: 100%; height: 20px; background: rgba(255, 255, 255, 0.3); top: 50%; left: 0; transform: translateY(-50%); }
-        .gift-box::after { content: ''; position: absolute; width: 20px; height: 100%; background: rgba(255, 255, 255, 0.3); left: 50%; top: 0; transform: translateX(-50%); }
-        .gift-bow { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 40px; height: 40px; background: #ff6b6b; border-radius: 50%; z-index: 2; }
-        .gift-bow::before, .gift-bow::after { content: ''; position: absolute; width: 60px; height: 20px; background: #ff6b6b; border-radius: 10px; top: 10px; }
+        
+        /* 礼物盒样式 */
+        .gift-container { position: relative; width: 200px; height: 200px; margin: 0 auto 50px; cursor: pointer; animation: floatSoft 4s ease-in-out infinite, glow 3s ease-in-out infinite alternate; }
+        .gift-container:hover { transform: scale(1.08); animation-play-state: paused; }
+        .gift-lid { position: absolute; top: 0; left: 0; width: 100%; height: 45%; background: linear-gradient(135deg, #c0392b, #e74c3c); border-radius: 10px 10px 0 0; transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1); z-index: 3; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15); }
+        .gift-lid::before { content: ''; position: absolute; width: 100%; height: 20px; background: rgba(255, 255, 255, 0.3); top: 50%; left: 0; transform: translateY(-50%); }
+        .gift-body { position: absolute; bottom: 0; left: 0; width: 100%; height: 55%; background: linear-gradient(135deg, #e74c3c, #c0392b); border-radius: 0 0 10px 10px; transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); }
+        .gift-body::after { content: ''; position: absolute; width: 20px; height: 100%; background: rgba(255, 255, 255, 0.3); left: 50%; top: 0; transform: translateX(-50%); }
+        .gift-bow { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 40px; height: 40px; background: linear-gradient(135deg, #ff6b6b, #ff8fa3); border-radius: 50%; z-index: 4; transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s; box-shadow: 0 0 20px rgba(255, 107, 107, 0.5); }
+        .gift-bow::before, .gift-bow::after { content: ''; position: absolute; width: 60px; height: 20px; background: linear-gradient(135deg, #ff6b6b, #ff8fa3); border-radius: 10px; top: 10px; transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s; box-shadow: 0 0 15px rgba(255, 107, 107, 0.4); }
         .gift-bow::before { left: -70px; transform: rotate(-45deg); }
         .gift-bow::after { right: -70px; transform: rotate(45deg); }
+        
+        /* 礼盒炸开动画 */
+        .gift-container.open .gift-lid { transform: translateY(-120px) rotate(15deg) scale(0.95); opacity: 0.85; box-shadow: 0 10px 30px rgba(231, 76, 60, 0.2); }
+        .gift-container.open .gift-body { transform: translateY(60px) rotate(-8deg) scale(0.95); opacity: 0.85; box-shadow: 0 20px 40px rgba(231, 76, 60, 0.2); }
+        .gift-container.open .gift-bow { transform: translateX(-50%) scale(1.6) translateY(-60px); box-shadow: 0 0 30px rgba(255, 107, 107, 0.7); }
+        .gift-container.open .gift-bow::before { transform: rotate(-35deg) translateX(-25px) translateY(-25px); width: 75px; box-shadow: 0 0 20px rgba(255, 107, 107, 0.6); }
+        .gift-container.open .gift-bow::after { transform: rotate(35deg) translateX(25px) translateY(-25px); width: 75px; box-shadow: 0 0 20px rgba(255, 107, 107, 0.6); }
+        
         .instructions { margin-top: 30px; font-style: italic; color: #7a5c4d; }
         .footer { margin-top: 50px; color: #7a5c4d; font-size: 0.9rem; }
         
         /* 消息页（默认隐藏） */
-        .messages-page { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; opacity: 0; transition: opacity 0.8s ease; position: relative; overflow: hidden; }
-        .messages-container { position: relative; width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .message { position: absolute; background: rgba(255, 255, 255, 0.9); padding: 25px 40px; border-radius: 30px; font-size: 1.5rem; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); opacity: 0; transition: opacity 0.6s ease, transform 0.6s ease; line-height: 1.5; max-width: 600px; text-align: center; z-index: 1; transform: translateY(20px); }
-        .message.active { opacity: 1; transform: translateY(0); }
-        .message i { color: #e74c3c; margin-right: 10px; font-size: 1.8rem; }
-        .message-counter { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(255, 255, 255, 0.7); padding: 8px 20px; border-radius: 20px; font-size: 1rem; color: #7a5c4d; }
-        .back-btn { position: absolute; top: 30px; right: 30px; background: rgba(255, 255, 255, 0.8); border: none; padding: 12px 25px; border-radius: 30px; font-size: 1rem; color: #8b4513; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); z-index: 10; }
-        .back-btn:hover { background: white; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); }
+        .messages-page { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; position: relative; overflow: hidden; }
+        .messages-container { position: relative; width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center; z-index: 1; }
+        .message { position: absolute; background: rgba(255, 255, 255, 0.95); padding: 25px 40px; border-radius: 30px; font-size: 1.5rem; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); opacity: 0; transition: opacity 0.8s ease, transform 0.8s ease; line-height: 1.6; max-width: 600px; text-align: center; z-index: 1; transform: translateY(30px) scale(0.95); }
+        .message.active { opacity: 1; transform: translateY(0) scale(1); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12); }
+        .message i { color: #e74c3c; margin-right: 10px; font-size: 1.8rem; animation: pulseSoft 2s ease infinite alternate; }
+        .message-counter { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(255, 255, 255, 0.85); padding: 8px 20px; border-radius: 20px; font-size: 1rem; color: #7a5c4d; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); z-index: 2; }
+        .back-btn { position: absolute; top: 30px; right: 30px; background: rgba(255, 255, 255, 0.9); border: none; padding: 12px 25px; border-radius: 30px; font-size: 1rem; color: #8b4513; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); z-index: 10; }
+        .back-btn:hover { background: white; transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); }
         
-        /* 动画效果 */
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        /* 动画合集 */
+        @keyframes floatSoft { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes glow { 0% { box-shadow: 0 0 20px rgba(255, 107, 107, 0.2); } 100% { box-shadow: 0 0 40px rgba(255, 107, 107, 0.4); } }
+        @keyframes pulseSoft { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+        @keyframes fall { 0% { transform: translateY(-50px) rotate(var(--rotate, 0deg)) scale(1); opacity: 0.9; } 100% { transform: translateY(calc(100vh + 50px)) rotate(var(--rotate, 0deg)) scale(0.8); opacity: 0; } }
+        @keyframes sway { 0% { transform: translateX(0) rotate(var(--rotate, 0deg)); } 100% { transform: translateX(var(--sway, 0px)) rotate(var(--rotate, 0deg)); } }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-        .pulse { animation: pulse 0.5s ease-in-out; }
+        .pulse { animation: pulse 0.6s ease-in-out; }
+        
+        /* 花瓣特效 */
+        .petal { position: absolute; background: linear-gradient(45deg, #ff6b6b, #ffd1dc); border-radius: 50% 0 50% 0; opacity: 0.85; pointer-events: none; z-index: 5; animation: fall linear infinite, sway ease-in-out infinite alternate; transform-origin: center; }
         
         /* 移动端适配 */
         @media (max-width: 768px) {
@@ -71,19 +92,15 @@
             .subtitle { font-size: 1rem; }
             .gift-container { width: 120px; height: 120px; }
             .message { font-size: 1.1rem; max-width: 350px; padding: 15px 25px; margin: 0 15px; }
-            .message i {
             .message i { font-size: 1.3rem; }
             .back-btn { top: 15px; right: 15px; padding: 8px 16px; font-size: 0.9rem; }
         }
         
-        /* 版本号样式（删除访问量相关样式，保留核心版本+作者） */
-        .version-info { 
-            position: fixed; bottom: 20px; right: 20px; text-align: right; 
-            color: #7a5c4d; z-index: 9; display: none; /* 初始强制隐藏 */
-        }
-        .version { font-size: 0.95rem; margin-bottom: 2px; }
-        .author { font-size: 0.75rem; opacity: 0.9; }
-        /* 移动端版本号适配（同步删除访问量样式） */
+        /* 版本号+版权信息 */
+        .version-info { position: fixed; bottom: 20px; right: 20px; text-align: right; color: #7a5c4d; z-index: 9; display: none; font-weight: 500; }
+        .version { font-size: 0.95rem; margin-bottom: 2px; letter-spacing: 0.5px; }
+        .author { font-size: 0.75rem; opacity: 0.9; letter-spacing: 0.3px; }
+        .copyright { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); color: #7a5c4d; font-size: 0.8rem; opacity: 0.9; text-align: center; z-index: 8; pointer-events: none; }
         @media (max-width: 480px) {
             .version-info { bottom: 60px; right: 15px; }
             .version { font-size: 0.85rem; }
@@ -92,7 +109,7 @@
     </style>
 </head>
 <body>
-    <!-- 公告页（无版本号元素，彻底杜绝显示） -->
+    <!-- 公告页 -->
     <div class="notice-page" id="noticePage">
         <div class="notice-content">
             <h2 class="notice-title">使用须知</h2>
@@ -104,69 +121,66 @@
                 <p>本网站旨在传播温暖与正能量，希望大家能够尊重原创，共同维护良好的网络环境</p>
             </div>
             <div class="countdown" id="countdown">5</div>
-            <button class="enter-btn" id="enterBtn" disabled>阅读5秒后进入</button>
+            <button class="enter-btn" id="enterBtn">阅读5秒后进入</button>
         </div>
+        <div class="copyright">© 2024 暖心礼物 | 大魔王.by 版权所有</div>
     </div>
     
-    <!-- 礼物页（含版本号，默认隐藏） -->
+    <!-- 礼物页 -->
     <div class="gift-page" id="giftPage">
         <div class="container">
             <h1>暖心礼物盒</h1>
             <p class="subtitle">点击礼物盒，收获温暖的安慰话语</p>
             <div class="gift-container" id="giftBox">
-                <div class="gift-box">
-                    <div class="gift-bow"></div>
-                </div>
+                <div class="gift-lid"></div>
+                <div class="gift-body"></div>
+                <div class="gift-bow"></div>
             </div>
             <p class="instructions">每一句温暖的话语都是给你的小小安慰</p>
             <div class="footer">
                 <p>制作者大魔王 希望这些话语能给你带来一丝温暖</p>
             </div>
         </div>
-        <!-- 礼物页专属版本号（删除访问量显示，版本号更新为v1.1.2） -->
         <div class="version-info" id="versionGift">
-            <div class="version">当前版本号 v1.1.2</div>
+            <div class="version">当前版本号 V1.2.2</div>
             <div class="author">大魔王.by</div>
         </div>
+        <div class="copyright">© 2024 暖心礼物 | 大魔王.by 版权所有</div>
     </div>
     
-    <!-- 消息页（含版本号，默认隐藏） -->
+    <!-- 消息页 -->
     <div class="messages-page" id="messagesPage">
         <div class="messages-container" id="messagesContainer"></div>
         <div class="message-counter" id="messageCounter">1 / 60</div>
         <button class="back-btn" id="backBtn">返回礼物盒</button>
-        <!-- 消息页专属版本号（删除访问量显示，版本号更新为v1.1.2） -->
         <div class="version-info" id="versionMsg">
-            <div class="version">当前版本号 v1.1.2</div>
+            <div class="version">当前版本号 V1.2.2</div>
             <div class="author">大魔王.by</div>
         </div>
+        <div class="copyright">© 2024 暖心礼物 | 大魔王.by 版权所有</div>
     </div>
 
     <script>
-        // 页面核心元素（删除访问量相关元素获取）
+        // 核心元素获取
+        const countdownEl = document.getElementById('countdown');
+        const enterBtn = document.getElementById('enterBtn');
         const noticePage = document.getElementById('noticePage');
         const giftPage = document.getElementById('giftPage');
         const messagesPage = document.getElementById('messagesPage');
-        const countdownElement = document.getElementById('countdown');
-        const enterBtn = document.getElementById('enterBtn');
         const giftBox = document.getElementById('giftBox');
         const messagesContainer = document.getElementById('messagesContainer');
         const messageCounter = document.getElementById('messageCounter');
         const backBtn = document.getElementById('backBtn');
-        // 版本号元素（分页面单独控制，彻底隔离公告页）
         const versionGift = document.getElementById('versionGift');
         const versionMsg = document.getElementById('versionMsg');
         
-        // 倒计时核心变量（三重加固，确保不失效）
+        // 🔥 修复1：用let+初始化锁，防止重复赋值
         let countdown = 5;
-        let countdownInterval = null;
-        
-        // 消息相关变量
+        let countdownStarted = false; // 新增：倒计时启动锁
         let isOpened = false;
-        let messageInterval = null;
-        let currentMessageIndex = 0;
+        let currentMsgIndex = 0;
         
-        // 安慰话语数组（完整60条）
+        // 安慰话语（60条完整）
         const comfortingMessages = [
             "你并不孤单，我在这里陪着你",
             "每一天都是新的开始，明天会更好",
@@ -230,108 +244,139 @@
             "你的每一步都在向前，无论大小"
         ];
 
-        // 倒计时功能（彻底修复，100%生效）
-        function startCountdown() {
-            // 强制重置状态，避免任何冲突
-            clearInterval(countdownInterval);
-            countdown = 5;
-            countdownElement.innerText = countdown;
-            enterBtn.disabled = true;
-            enterBtn.classList.remove('active');
-            enterBtn.innerText = '阅读5秒后进入';
+        // 🔥 修复2：倒计时函数加锁，只启动一次
+        function initCountdown() {
+            if (countdownStarted) return; // 已启动则直接返回，不重复执行
+            countdownStarted = true; // 标记为已启动
             
-            // 启动倒计时，每秒减1
-            countdownInterval = setInterval(() => {
+            enterBtn.disabled = true;
+            countdownEl.innerText = countdown; // 强制显示初始值5
+            
+            // 定时器精准执行，每秒减1
+            const timer = setInterval(() => {
                 countdown--;
-                countdownElement.innerText = countdown;
+                countdownEl.innerText = countdown;
                 
-                // 倒计时结束，激活按钮
                 if (countdown <= 0) {
-                    clearInterval(countdownInterval);
+                    clearInterval(timer);
                     enterBtn.disabled = false;
                     enterBtn.classList.add('active');
-                    enterBtn.innerText = '进入网站';
+                    enterBtn.innerText = "进入网站";
                 }
             }, 1000);
         }
 
-        // 消息轮播功能
-        function startMessageRotation() {
-            createMessage();
-            messageInterval = setInterval(() => {
+        // 🔥 修复3：只保留一个启动入口，去掉重复触发
+        window.onload = function() {
+            initCountdown(); // 唯一启动入口，不重复调用
+            createStars();
+            messageCounter.innerText = `1 / ${comfortingMessages.length}`;
+        };
+
+        // 星光生成
+        function createStars() {
+            const starCount = 60;
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = `${Math.random() * 3 + 1}px`;
+                star.style.height = `${Math.random() * 3 + 1}px`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.animationDuration = `${Math.random() * 5 + 3}s`;
+                giftPage.appendChild(star);
+                messagesPage.appendChild(star.cloneNode(true));
+            }
+        }
+
+        // 花瓣生成
+        function createPetals() {
+            const petalCount = 30;
+            const colors = ['#ff6b6b', '#ffafbd', '#ffc3a0', '#ffd1dc', '#ff8fa3', '#ffe6ea'];
+            for (let i = 0; i < petalCount; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'petal';
+                const size = Math.random() * 15 + 8;
+                const rotate = Math.random() * 360;
+                const sway = Math.random() * 15 - 7;
+                petal.style.setProperty('--rotate', `${rotate}deg`);
+                petal.style.setProperty('--sway', `${sway}px`);
+                petal.style.width = `${size}px`;
+                petal.style.height = `${size}px`;
+                petal.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                petal.style.left = `${Math.random() * 100}%`;
+                petal.style.animationDuration = `${Math.random() * 6 + 4}s, ${Math.random() * 2 + 1}s`;
+                document.body.appendChild(petal);
+                setTimeout(() => petal.remove(), (Math.random() * 6 + 4) * 1000);
+            }
+        }
+
+        // 消息轮播
+        function startMsgLoop() {
+            renderMsg();
+            setInterval(() => {
                 const activeMsg = document.querySelector('.message.active');
                 if (activeMsg) {
                     activeMsg.style.opacity = 0;
-                    activeMsg.style.transform = 'translateY(-20px)';
-                    setTimeout(() => activeMsg.remove(), 600);
+                    setTimeout(() => activeMsg.remove(), 700);
                 }
-                
-                currentMessageIndex = (currentMessageIndex + 1) % comfortingMessages.length;
-                messageCounter.innerText = `${currentMessageIndex + 1} / ${comfortingMessages.length}`;
-                setTimeout(createMessage, 300);
-            }, 2000);
+                currentMsgIndex = (currentMsgIndex + 1) % comfortingMessages.length;
+                messageCounter.innerText = `${currentMsgIndex + 1} / ${comfortingMessages.length}`;
+                setTimeout(renderMsg, 300);
+            }, 2200);
         }
 
-        // 创建单条消息
-        function createMessage() {
+        function renderMsg() {
             const msg = document.createElement('div');
             msg.className = 'message';
-            msg.innerHTML = `<i class="fas fa-heart"></i> ${comfortingMessages[currentMessageIndex]}`;
+            msg.innerHTML = `<i class="fas fa-heart"></i> ${comfortingMessages[currentMsgIndex]}`;
             messagesContainer.appendChild(msg);
             setTimeout(() => msg.classList.add('active'), 100);
         }
 
-        // 页面切换事件：公告页 → 礼物页
+        // 页面切换：公告页 → 礼物页
         enterBtn.addEventListener('click', () => {
-            noticePage.style.display = 'none';
-            giftPage.style.display = 'flex';
-            versionGift.style.display = 'block'; // 只在礼物页显示版本号
+            noticePage.style.opacity = 0;
+            setTimeout(() => {
+                noticePage.style.display = 'none';
+                giftPage.style.display = 'flex';
+                versionGift.style.display = 'block';
+            }, 400);
         });
 
-        // 页面切换事件：礼物页 → 消息页
+        // 页面切换：礼物页 → 消息页
         giftBox.addEventListener('click', () => {
             if (isOpened) return;
             isOpened = true;
-            giftBox.classList.add('pulse');
-            
+            giftBox.classList.add('open', 'pulse');
+            createPetals();
             setTimeout(() => {
                 giftPage.style.opacity = 0;
                 setTimeout(() => {
                     giftPage.style.display = 'none';
                     messagesPage.style.display = 'flex';
-                    versionGift.style.display = 'none'; // 隐藏礼物页版本号
-                    versionMsg.style.display = 'block'; // 显示消息页版本号
-                    startMessageRotation();
-                    setTimeout(() => messagesPage.style.opacity = 1, 100);
+                    versionGift.style.display = 'none';
+                    versionMsg.style.display = 'block';
+                    startMsgLoop();
                 }, 800);
-            }, 500);
+            }, 600);
         });
 
-        // 页面切换事件：消息页 → 礼物页
+        // 页面切换：消息页 → 礼物页
         backBtn.addEventListener('click', () => {
-            clearInterval(messageInterval);
             messagesPage.style.opacity = 0;
             messagesContainer.innerHTML = '';
-            
             setTimeout(() => {
                 messagesPage.style.display = 'none';
                 giftPage.style.display = 'flex';
-                versionMsg.style.display = 'none'; // 隐藏消息页版本号
-                versionGift.style.display = 'block'; // 显示礼物页版本号
-                setTimeout(() => {
-                    giftPage.style.opacity = 1;
-                    isOpened = false;
-                    currentMessageIndex = 0;
-                    messageCounter.innerText = `1 / ${comfortingMessages.length}`;
-                }, 100);
-            }, 800);
+                versionMsg.style.display = 'none';
+                versionGift.style.display = 'block';
+                isOpened = false;
+                currentMsgIndex = 0;
+                messageCounter.innerText = `1 / ${comfortingMessages.length}`;
+                giftBox.classList.remove('open', 'pulse');
+            }, 600);
         });
-
-        // 页面加载完成后，优先启动倒计时（确保第一时间执行）
-        window.onload = () => {
-            startCountdown();
-            messageCounter.innerText = `1 / ${comfortingMessages.length}`;
-        };
     </script>
 </body>
 </html>
