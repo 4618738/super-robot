@@ -98,7 +98,7 @@
         
         /* 版本号+版权信息 */
         .version-info { position: fixed; bottom: 20px; right: 20px; text-align: right; color: #7a5c4d; z-index: 9; display: none; font-weight: 500; }
-        .version { font-size: 0.95rem; margin-bottom: 2px; letter-spacing: 0.5px; }
+        .version { font-size: 0.9rem; letter-spacing: 0.5px; }
         .author { font-size: 0.75rem; opacity: 0.9; letter-spacing: 0.3px; }
         .copyright { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); color: #7a5c4d; font-size: 0.8rem; opacity: 0.9; text-align: center; z-index: 8; pointer-events: none; }
         @media (max-width: 480px) {
@@ -120,8 +120,8 @@
                 <p><strong>3. bug反馈/语录提供:15259955231@163.com   xiaojianxiang816@gmail.com</strong></p>
                 <p>本网站旨在传播温暖与正能量，希望大家能够尊重原创，共同维护良好的网络环境</p>
             </div>
-            <div class="countdown" id="countdown">5</div>
-            <button class="enter-btn" id="enterBtn">阅读5秒后进入</button>
+            <div class="countdown" id="countdown">3</div>
+            <button class="enter-btn" id="enterBtn">阅读3秒后进入</button>
         </div>
         <div class="copyright">© 2024 暖心礼物 | 大魔王.by 版权所有</div>
     </div>
@@ -142,7 +142,7 @@
             </div>
         </div>
         <div class="version-info" id="versionGift">
-            <div class="version">当前版本号 V1.2.2</div>
+            <div class="version">当前版本号 V1.2.3</div>
             <div class="author">大魔王.by</div>
         </div>
         <div class="copyright">© 2024 暖心礼物 | 大魔王.by 版权所有</div>
@@ -154,7 +154,7 @@
         <div class="message-counter" id="messageCounter">1 / 60</div>
         <button class="back-btn" id="backBtn">返回礼物盒</button>
         <div class="version-info" id="versionMsg">
-            <div class="version">当前版本号 V1.2.2</div>
+            <div class="version">当前版本号 V1.2.3</div>
             <div class="author">大魔王.by</div>
         </div>
         <div class="copyright">© 2024 暖心礼物 | 大魔王.by 版权所有</div>
@@ -173,10 +173,8 @@
         const backBtn = document.getElementById('backBtn');
         const versionGift = document.getElementById('versionGift');
         const versionMsg = document.getElementById('versionMsg');
-        
-        // 🔥 修复1：用let+初始化锁，防止重复赋值
-        let countdown = 5;
-        let countdownStarted = false; // 新增：倒计时启动锁
+        let countdown = 3;
+        let countdownStarted = false;
         let isOpened = false;
         let currentMsgIndex = 0;
         
@@ -244,34 +242,41 @@
             "你的每一步都在向前，无论大小"
         ];
 
-        // 🔥 修复2：倒计时函数加锁，只启动一次
+        // ========== 修复倒计时后按钮不激活的核心问题 ==========
         function initCountdown() {
-            if (countdownStarted) return; // 已启动则直接返回，不重复执行
-            countdownStarted = true; // 标记为已启动
-            
+            if (countdownStarted) return;
+            countdownStarted = true;
             enterBtn.disabled = true;
-            countdownEl.innerText = countdown; // 强制显示初始值5
+            countdownEl.innerText = countdown;
             
-            // 定时器精准执行，每秒减1
-            const timer = setInterval(() => {
-                countdown--;
-                countdownEl.innerText = countdown;
-                
-                if (countdown <= 0) {
-                    clearInterval(timer);
-                    enterBtn.disabled = false;
-                    enterBtn.classList.add('active');
-                    enterBtn.innerText = "进入网站";
+            let lastTime = Date.now();
+            let animationId; // 存储动画帧ID，用于停止动画
+            
+            function update() {
+                const now = Date.now();
+                if (now - lastTime >= 1000) {
+                    countdown--;
+                    countdownEl.innerText = countdown;
+                    lastTime = now;
+                    
+                    // 倒计时结束：激活按钮（关键修复）
+                    if (countdown <= 0) {
+                        cancelAnimationFrame(animationId); // 用正确的方法停止动画
+                        enterBtn.disabled = false;
+                        enterBtn.classList.add('active');
+                        enterBtn.innerText = "进入网站";
+                        return;
+                    }
                 }
-            }, 1000);
+                animationId = requestAnimationFrame(update); // 保存动画帧ID
+            }
+            update();
         }
 
-        // 🔥 修复3：只保留一个启动入口，去掉重复触发
-        window.onload = function() {
-            initCountdown(); // 唯一启动入口，不重复调用
-            createStars();
-            messageCounter.innerText = `1 / ${comfortingMessages.length}`;
-        };
+        // 立即启动倒计时
+        initCountdown();
+        createStars();
+        messageCounter.innerText = `1 / ${comfortingMessages.length}`;
 
         // 星光生成
         function createStars() {
