@@ -3,52 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>暖心礼物❤️</title>
+    <title>六一暖心礼物❤️</title>
     <script defer src="https://cloud.umami.is/script.js" data-website-id="75d9443c-d127-474a-8083-a5f07aca5b8c"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: linear-gradient(135deg, #ffafbd, #ffc3a0); min-height: 100vh; overflow: hidden; color: #5a3e36; }
+        body { background: linear-gradient(135deg, #ffafbd, #ffc3a0,#9dd6ff,#c8f8ff); min-height: 100vh; overflow: hidden; color: #5a3e36; }
         
         /* 星光背景 */
         .star { position: absolute; background: rgba(255, 255, 255, 0.8); border-radius: 50%; pointer-events: none; animation: twinkle infinite alternate; z-index: 0; }
         @keyframes twinkle { 0% { opacity: 0.2; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
+
+        /* ========== 六一新增：彩虹+气球+云朵动画 ========== */
+        .rainbow{position:absolute;top:5%;left:50%;transform:translateX(-50%);width:60%;height:120px;background:linear-gradient(90deg,#ff6b6b,#ffd86b,#96ffb1,#6bc3ff,#c296ff);border-radius:50%;opacity:0.3;z-index:0;}
+        .balloon{position:absolute;border-radius:50% 50% 50% 55%;animation:balloonFloat 8s ease-in-out infinite alternate;pointer-events:none;z-index:2;}
+        .balloon::after{content:'';position:absolute;bottom:-25px;left:50%;width:1px;height:25px;background:#fff;transform:translateX(-50%);}
+        .cloud{position:absolute;background:#fff;border-radius:100px;opacity:0.4;animation:cloudMove 20s linear infinite;z-index:0;}
+        @keyframes balloonFloat{0%{transform:translateY(0) rotate(-5deg);}100%{transform:translateY(-30px) rotate(5deg);}}
+        @keyframes cloudMove{0%{transform:translateX(-100%);}100%{transform:translateX(100vw);}}
         
         /* 公告页（默认显示） */
         .notice-page { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 30px; text-align: center; background: rgba(255, 255, 255, 0.9); z-index: 100; position: relative; }
         .notice-content { max-width: 600px; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
-        .notice-title { font-size: 2.2rem; margin-bottom: 20px; color: #e74c3c; }
+        .notice-title { font-size: 2.2rem; margin-bottom: 20px; color: #ff7eb3; }
+        .six-one-tag{color:#ff9f43;font-weight:bold;font-size:1.3rem;margin-bottom:10px;}
         .notice-text { font-size: 1.2rem; line-height: 1.6; margin-bottom: 30px; color: #5a3e36; }
-        .notice-text strong { color: #e74c3c; font-weight: 600; }
-        .countdown { font-size: 1.5rem; margin-bottom: 30px; color: #e74c3c; font-weight: bold; }
-        .enter-btn { background: #e74c3c; color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; opacity: 0.5; pointer-events: none; }
+        .notice-text strong { color: #ff7eb3; font-weight: 600; }
+        .countdown { font-size: 1.5rem; margin-bottom: 30px; color: #ff7eb3; font-weight: bold; }
+        .enter-btn { background: #ff7eb3; color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; opacity: 0.5; pointer-events: none; }
         .enter-btn.active { opacity: 1; pointer-events: auto; }
-        .enter-btn:hover { background: #c0392b; transform: translateY(-2px); box-shadow: 0 8px 15px rgba(231, 76, 60, 0.3); }
+        .enter-btn:hover { background: #f55da2; transform: translateY(-2px); box-shadow: 0 8px 15px rgba(255, 126, 179, 0.3); }
         
         /* 礼物页（默认隐藏） */
         .gift-page { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; position: relative; }
         .container { text-align: center; max-width: 800px; width: 100%; position: relative; z-index: 1; }
-        h1 { font-size: 2.8rem; margin-bottom: 10px; color: #8b4513; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); }
+        h1 { font-size: 2.8rem; margin-bottom: 10px; color: #ff6aa8; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); }
         .subtitle { font-size: 1.2rem; margin-bottom: 40px; color: #7a5c4d; }
         
         /* 礼物盒样式 */
         .gift-container { position: relative; width: 200px; height: 200px; margin: 0 auto 50px; cursor: pointer; animation: floatSoft 4s ease-in-out infinite, glow 3s ease-in-out infinite alternate; }
         .gift-container:hover { transform: scale(1.08); animation-play-state: paused; }
-        .gift-lid { position: absolute; top: 0; left: 0; width: 100%; height: 45%; background: linear-gradient(135deg, #c0392b, #e74c3c); border-radius: 10px 10px 0 0; transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1); z-index: 3; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15); }
+        .gift-lid { position: absolute; top: 0; left: 0; width: 100%; height: 45%; background: linear-gradient(135deg, #ff6aa8, #ff9fcb); border-radius: 10px 10px 0 0; transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1); z-index: 3; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15); }
         .gift-lid::before { content: ''; position: absolute; width: 100%; height: 20px; background: rgba(255, 255, 255, 0.3); top: 50%; left: 0; transform: translateY(-50%); }
-        .gift-body { position: absolute; bottom: 0; left: 0; width: 100%; height: 55%; background: linear-gradient(135deg, #e74c3c, #c0392b); border-radius: 0 0 10px 10px; transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); }
+        .gift-body { position: absolute; bottom: 0; left: 0; width: 100%; height: 55%; background: linear-gradient(135deg, #ff9fcb, #ff6aa8); border-radius: 0 0 10px 10px; transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); }
         .gift-body::after { content: ''; position: absolute; width: 20px; height: 100%; background: rgba(255, 255, 255, 0.3); left: 50%; top: 0; transform: translateX(-50%); }
-        .gift-bow { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 40px; height: 40px; background: linear-gradient(135deg, #ff6b6b, #ff8fa3); border-radius: 50%; z-index: 4; transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s; box-shadow: 0 0 20px rgba(255, 107, 107, 0.5); }
-        .gift-bow::before, .gift-bow::after { content: ''; position: absolute; width: 60px; height: 20px; background: linear-gradient(135deg, #ff6b6b, #ff8fa3); border-radius: 10px; top: 10px; transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s; box-shadow: 0 0 15px rgba(255, 107, 107, 0.4); }
+        .gift-bow { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 40px; height: 40px; background: linear-gradient(135deg, #ffd16b, #ffb84d); border-radius: 50%; z-index: 4; transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s; box-shadow: 0 0 20px rgba(255, 209, 107, 0.5); }
+        .gift-bow::before, .gift-bow::after { content: ''; position: absolute; width: 60px; height: 20px; background: linear-gradient(135deg, #ffd16b, #ffb84d); border-radius: 10px; top: 10px; transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s; box-shadow: 0 0 15px rgba(255, 209, 107, 0.4); }
         .gift-bow::before { left: -70px; transform: rotate(-45deg); }
         .gift-bow::after { right: -70px; transform: rotate(45deg); }
         
         /* 礼盒炸开动画 */
-        .gift-container.open .gift-lid { transform: translateY(-120px) rotate(15deg) scale(0.95); opacity: 0.85; box-shadow: 0 10px 30px rgba(231, 76, 60, 0.2); }
-        .gift-container.open .gift-body { transform: translateY(60px) rotate(-8deg) scale(0.95); opacity: 0.85; box-shadow: 0 20px 40px rgba(231, 76, 60, 0.2); }
-        .gift-container.open .gift-bow { transform: translateX(-50%) scale(1.6) translateY(-60px); box-shadow: 0 0 30px rgba(255, 107, 107, 0.7); }
-        .gift-container.open .gift-bow::before { transform: rotate(-35deg) translateX(-25px) translateY(-25px); width: 75px; box-shadow: 0 0 20px rgba(255, 107, 107, 0.6); }
-        .gift-container.open .gift-bow::after { transform: rotate(35deg) translateX(25px) translateY(-25px); width: 75px; box-shadow: 0 0 20px rgba(255, 107, 107, 0.6); }
+        .gift-container.open .gift-lid { transform: translateY(-120px) rotate(15deg) scale(0.95); opacity: 0.85; box-shadow: 0 10px 30px rgba(255, 106, 168, 0.2); }
+        .gift-container.open .gift-body { transform: translateY(60px) rotate(-8deg) scale(0.95); opacity: 0.85; box-shadow: 0 20px 40px rgba(255, 106, 168, 0.2); }
+        .gift-container.open .gift-bow { transform: translateX(-50%) scale(1.6) translateY(-60px); box-shadow: 0 0 30px rgba(255, 209, 107, 0.7); }
+        .gift-container.open .gift-bow::before { transform: rotate(-35deg) translateX(-25px) translateY(-25px); width: 75px; box-shadow: 0 0 20px rgba(255, 209, 107, 0.6); }
+        .gift-container.open .gift-bow::after { transform: rotate(35deg) translateX(25px) translateY(-25px); width: 75px; box-shadow: 0 0 20px rgba(255, 209, 107, 0.6); }
         
         .instructions { margin-top: 30px; font-style: italic; color: #7a5c4d; }
         .footer { margin-top: 50px; color: #7a5c4d; font-size: 0.9rem; }
@@ -58,14 +67,14 @@
         .messages-container { position: relative; width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center; z-index: 1; }
         .message { position: absolute; background: rgba(255, 255, 255, 0.95); padding: 25px 40px; border-radius: 30px; font-size: 1.5rem; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); opacity: 0; transition: opacity 0.8s ease, transform 0.8s ease; line-height: 1.6; max-width: 600px; text-align: center; z-index: 1; transform: translateY(30px) scale(0.95); }
         .message.active { opacity: 1; transform: translateY(0) scale(1); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12); }
-        .message i { color: #e74c3c; margin-right: 10px; font-size: 1.8rem; animation: pulseSoft 2s ease infinite alternate; }
+        .message i { color: #ff7eb3; margin-right: 10px; font-size: 1.8rem; animation: pulseSoft 2s ease infinite alternate; }
         .message-counter { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(255, 255, 255, 0.85); padding: 8px 20px; border-radius: 20px; font-size: 1rem; color: #7a5c4d; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); z-index: 2; }
-        .back-btn { position: absolute; top: 30px; right: 30px; background: rgba(255, 255, 255, 0.9); border: none; padding: 12px 25px; border-radius: 30px; font-size: 1rem; color: #8b4513; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); z-index: 10; }
+        .back-btn { position: absolute; top: 30px; right: 30px; background: rgba(255, 255, 255, 0.9); border: none; padding: 12px 25px; border-radius: 30px; font-size: 1rem; color: #ff6aa8; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); z-index: 10; }
         .back-btn:hover { background: white; transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); }
         
         /* 动画合集 */
         @keyframes floatSoft { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-        @keyframes glow { 0% { box-shadow: 0 0 20px rgba(255, 107, 107, 0.2); } 100% { box-shadow: 0 0 40px rgba(255, 107, 107, 0.4); } }
+        @keyframes glow { 0% { box-shadow: 0 0 20px rgba(255, 126, 179, 0.2); } 100% { box-shadow: 0 0 40px rgba(255, 126, 179, 0.4); } }
         @keyframes pulseSoft { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
         @keyframes fall { 0% { transform: translateY(-50px) rotate(var(--rotate, 0deg)) scale(1); opacity: 0.9; } 100% { transform: translateY(calc(100vh + 50px)) rotate(var(--rotate, 0deg)) scale(0.8); opacity: 0; } }
         @keyframes sway { 0% { transform: translateX(0) rotate(var(--rotate, 0deg)); } 100% { transform: translateX(var(--sway, 0px)) rotate(var(--rotate, 0deg)); } }
@@ -73,7 +82,7 @@
         .pulse { animation: pulse 0.6s ease-in-out; }
         
         /* 花瓣特效 */
-        .petal { position: absolute; background: linear-gradient(45deg, #ff6b6b, #ffd1dc); border-radius: 50% 0 50% 0; opacity: 0.85; pointer-events: none; z-index: 5; animation: fall linear infinite, sway ease-in-out infinite alternate; transform-origin: center; }
+        .petal { position: absolute; background: linear-gradient(45deg, #ff9fcb, #ffd1dc,#9dd6ff); border-radius: 50% 0 50% 0; opacity: 0.85; pointer-events: none; z-index: 5; animation: fall linear infinite, sway ease-in-out infinite alternate; transform-origin: center; }
         
         /* 移动端适配 */
         @media (max-width: 768px) {
@@ -109,43 +118,47 @@
     </style>
 </head>
 <body>
+    <!-- 六一彩虹背景 -->
+    <div class="rainbow"></div>
+
     <!-- 公告页 -->
     <div class="notice-page" id="noticePage">
         <div class="notice-content">
+            <div class="six-one-tag">✨ 六一儿童节限定礼物 ✨</div>
             <h2 class="notice-title">使用须知</h2>
             <div class="notice-text">
-                <p>欢迎使用暖心礼物网站！在使用前请阅读以下重要提示：</p>
+                <p>欢迎使用六一暖心礼物网站！在使用前请阅读以下重要提示：</p>
                 <p><strong>1. 请勿将此网站用于商业用途或圈钱行为</strong></p>
                 <p><strong>2. 请勿对网站进行二次修改并声称是原创作品</strong></p>
                 <p><strong>3. bug反馈/语录提供:15259955231@163.com   xiaojianxiang816@gmail.com</strong></p>
-                <p>本网站旨在传播温暖与正能量，希望大家能够尊重原创，共同维护良好的网络环境</p>
+                <p>童心未泯，岁岁欢喜，愿所有小朋友大朋友节日快乐温暖常在</p>
             </div>
             <div class="countdown" id="countdown">3</div>
             <button class="enter-btn" id="enterBtn">阅读3秒后进入</button>
         </div>
-        <div class="copyright">© 2024 暖心礼物 | 大魔王.by 版权所有</div>
+        <div class="copyright">© 2024 暖心礼物 | 六一限定V1.3.0 大魔王.by 版权所有</div>
     </div>
     
     <!-- 礼物页 -->
     <div class="gift-page" id="giftPage">
         <div class="container">
-            <h1>暖心礼物盒</h1>
-            <p class="subtitle">点击礼物盒，收获温暖的安慰话语</p>
+            <h1>六一童趣暖心礼物盒</h1>
+            <p class="subtitle">童心永驻，点击礼物盒，收获专属温暖治愈话语</p>
             <div class="gift-container" id="giftBox">
                 <div class="gift-lid"></div>
                 <div class="gift-body"></div>
                 <div class="gift-bow"></div>
             </div>
-            <p class="instructions">每一句温暖的话语都是给你的小小安慰</p>
+            <p class="instructions">每一句温暖的话语都是六一专属小小惊喜</p>
             <div class="footer">
-                <p>制作者大魔王 希望这些话语能给你带来一丝温暖</p>
+                <p>制作者大魔王 六一快乐 愿你永远保持童真与温柔</p>
             </div>
         </div>
         <div class="version-info" id="versionGift">
-            <div class="version">当前版本号 V1.2.3</div>
+            <div class="version">当前版本号 V1.3.0 六一限定版</div>
             <div class="author">大魔王.by</div>
         </div>
-        <div class="copyright">© 2024 暖心礼物 | 大魔王.by 版权所有</div>
+        <div class="copyright">© 2024 暖心礼物 | 六一限定V1.3.0 大魔王.by 版权所有</div>
     </div>
     
     <!-- 消息页 -->
@@ -154,10 +167,10 @@
         <div class="message-counter" id="messageCounter">1 / 60</div>
         <button class="back-btn" id="backBtn">返回礼物盒</button>
         <div class="version-info" id="versionMsg">
-            <div class="version">当前版本号 V1.2.3</div>
+            <div class="version">当前版本号 V1.3.0 六一限定版</div>
             <div class="author">大魔王.by</div>
         </div>
-        <div class="copyright">© 2024 暖心礼物 | 大魔王.by 版权所有</div>
+        <div class="copyright">© 2024 暖心礼物 | 六一限定V1.3.0 大魔王.by 版权所有</div>
     </div>
 
     <script>
@@ -276,7 +289,40 @@
         // 立即启动倒计时
         initCountdown();
         createStars();
+        createBalloons();
+        createClouds();
         messageCounter.innerText = `1 / ${comfortingMessages.length}`;
+
+        // ========== 六一新增：气球生成 ==========
+        function createBalloons(){
+            const colors = ['#ff6b9d','#6bcbff','#ffd86b','#9dffc2','#d89dff'];
+            for(let i=0;i<8;i++){
+                const b = document.createElement('div');
+                b.className='balloon';
+                const s = Math.random()*40+30;
+                b.style.width = s+'px';
+                b.style.height = s*1.1+'px';
+                b.style.background = colors[Math.floor(Math.random()*colors.length)];
+                b.style.left = Math.random()*90+'%';
+                b.style.top = Math.random()*40+'%';
+                b.style.animationDelay = Math.random()*5+'s';
+                document.body.appendChild(b);
+            }
+        }
+
+        // ========== 六一新增：云朵生成 ==========
+        function createClouds(){
+            for(let i=0;i<5;i++){
+                const c = document.createElement('div');
+                c.className='cloud';
+                const w = Math.random()*120+80;
+                c.style.width = w+'px';
+                c.style.height = w*0.5+'px';
+                c.style.top = Math.random()*60+'%';
+                c.style.animationDelay = Math.random()*20+'s';
+                document.body.appendChild(c);
+            }
+        }
 
         // 星光生成
         function createStars() {
@@ -297,7 +343,7 @@
         // 花瓣生成
         function createPetals() {
             const petalCount = 30;
-            const colors = ['#ff6b6b', '#ffafbd', '#ffc3a0', '#ffd1dc', '#ff8fa3', '#ffe6ea'];
+            const colors = ['#ff6b6b', '#ffafbd', '#ffc3a0', '#ffd1dc', '#ff8fa3', '#ffe6ea','#9dd6ff'];
             for (let i = 0; i < petalCount; i++) {
                 const petal = document.createElement('div');
                 petal.className = 'petal';
