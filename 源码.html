@@ -121,7 +121,7 @@
 			.gift-container { width: 150px; height: 150px; }
 			.message { font-size: 1.3rem; max-width: 500px; padding: 20px 30px; }
 			.message i { font-size: 1.5rem; }
-			.back-btn { top: 20px; right: 20px; padding: 10px 20px; }
+			.back-btn { top: 20px; right: 20px; }
 			.lang-switch { top:15px;right:15px; }
 			.lang-btn { padding:5px 10px;font-size:0.8rem; }
 		}
@@ -215,9 +215,8 @@
 		<button class="lang-btn" id="enBtn">English</button>
 	</div>
 
-	<!-- 切歌按钮组 默认隐藏 -->
+	<!-- 切歌按钮组 只留下一首 -->
 	<div class="music-sub-control" id="musicSub">
-		<button id="prevBtn"><i class="fas fa-step-backward"></i></button>
 		<button id="nextBtn"><i class="fas fa-step-forward"></i></button>
 	</div>
 
@@ -233,7 +232,7 @@
 	<div class="notice-page" id="noticePage">
 		<div class="notice-content">
 			<div class="six-one-tag zh">✨ 六一儿童节限定礼物 ✨</div>
-			<div class="six-one-tag en">✨ Children's Day Limited Gift ✨</div>
+			<div class.six-one-tag en">✨ Children's Day Limited Gift ✨</div>
 
 			<h2 class="notice-title zh">使用须知</h2>
 			<h2 class="notice-title en">Notice</h2>
@@ -261,8 +260,8 @@
 				<span class="en">Enter after 3s</span>
 			</button>
 		</div>
-		<div class="copyright zh">© 2024 暖心礼物 | 六一限定V1.5.0 大魔王.by 版权所有</div>
-		<div class="copyright en">© 2024 Warm Gift | Children's Day V1.5.0 All Rights Reserved</div>
+		<div class="copyright zh">© 2024 暖心礼物 | 六一限定V1.6.0 大魔王.by 版权所有</div>
+		<div class="copyright en">© 2024 Warm Gift | Children's Day V1.6.0 All Rights Reserved</div>
 	</div>
 	
 	<!-- 礼物页 -->
@@ -289,12 +288,12 @@
 			</div>
 		</div>
 		<div class="version-info" id="versionGift">
-			<div class="version zh">当前版本号 V1.5.0 六一限定版</div>
-			<div class="version en">Version V1.5.0 Children's Day</div>
+			<div class="version zh">当前版本号 V1.6.0 六一限定版</div>
+			<div class="version en">Version V1.6.0 Children's Day</div>
 			<div class="author">大魔王.by</div>
 		</div>
-		<div class="copyright zh">© 2024 暖心礼物 | 六一限定V1.5.0 大魔王.by 版权所有</div>
-		<div class="copyright en">© 2024 Warm Gift | Children's Day V1.5.0 All Rights Reserved</div>
+		<div class="copyright zh">© 2024 暖心礼物 | 六一限定V1.6.0 大魔王.by 版权所有</div>
+		<div class="copyright en">© 2024 Warm Gift | Children's Day V1.6.0 All Rights Reserved</div>
 	</div>
 	
 	<!-- 消息页 -->
@@ -306,36 +305,62 @@
 			<span class="en">Back</span>
 		</button>
 		<div class="version-info" id="versionMsg">
-			<div class="version zh">当前版本号 V1.5.0 六一限定版</div>
-			<div class="version en">Version V1.5.0 Children's Day</div>
+			<div class="version zh">当前版本号 V1.6.0 六一限定版</div>
+			<div class="version en">Version V1.6.0 Children's Day</div>
 			<div class="author">大魔王.by</div>
 		</div>
-		<div class="copyright zh">© 2024 暖心礼物 | 六一限定V1.5.0 大魔王.by 版权所有</div>
-		<div class="copyright en">© 2024 Warm Gift | Children's Day V1.5.0 All Rights Reserved</div>
+		<div class="copyright zh">© 2024 暖心礼物 | 六一限定V1.6.0 大魔王.by 版权所有</div>
+		<div class="copyright en">© 2024 Warm Gift | Children's Day V1.6.0 All Rights Reserved</div>
 	</div>
 
 	<script>
-		// 歌曲列表
+		// 原始歌曲列表
 		const songList = [
 			"http://music.163.com/song/media/outer/url?id=2077781487.mp3",
-			"https://music.163.com/song/media/outer/url?id=190758.mp3"
+			"https://music.163.com/song/media/outer/url?id=190758.mp3",
+			"http://music.163.com/song/media/outer/url?id=1394167216.mp3",
+			"http://music.163.com/song/media/outer/url?id=1440822345.mp3",
+			"http://music.163.com/song/media/outer/url?id=2096025241.mp3"
 		];
-		let currentSongIndex = 0;
+
+		// 洗牌后播放队列、当前播放索引
+		let shuffleList = [];
+		let playIndex = 0;
+
+		// 数组洗牌算法
+		function shuffleArr(arr){
+			let newArr = [...arr];
+			for(let i = newArr.length - 1; i > 0; i--){
+				let j = Math.floor(Math.random() * (i + 1));
+				[newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+			}
+			return newArr;
+		}
+
+		// 初始化第一次洗牌
+		shuffleList = shuffleArr(songList);
+		playIndex = 0;
+
 		const bgMusic = new Audio();
-		bgMusic.src = songList[currentSongIndex];
+		bgMusic.src = shuffleList[playIndex];
 		bgMusic.loop = false;
 		bgMusic.volume = 0.4;
 		let isMusicPlay = false;
 
+		// 播放结束 → 按洗牌列表顺序播，播完整轮重新洗牌
 		bgMusic.addEventListener('ended', function(){
-			currentSongIndex = (currentSongIndex + 1) % songList.length;
-			bgMusic.src = songList[currentSongIndex];
+			playIndex++;
+			// 一轮播完，重新洗牌从头来
+			if(playIndex >= shuffleList.length){
+				shuffleList = shuffleArr(songList);
+				playIndex = 0;
+			}
+			bgMusic.src = shuffleList[playIndex];
 			if(isMusicPlay){ bgMusic.play(); }
 		});
 
 		const musicBtn = document.getElementById('musicBtn');
 		const musicSub = document.getElementById('musicSub');
-		const prevBtn = document.getElementById('prevBtn');
 		const nextBtn = document.getElementById('nextBtn');
 
 		musicBtn.addEventListener('click', () => {
@@ -349,15 +374,14 @@
 			musicSub.classList.toggle('show');
 		});
 
-		prevBtn.addEventListener('click', () => {
-			currentSongIndex = (currentSongIndex - 1 + songList.length) % songList.length;
-			bgMusic.src = songList[currentSongIndex];
-			if(isMusicPlay) bgMusic.play();
-		});
-
+		// 下一首 → 按洗牌列表顺序切，不重复，整轮完重新洗牌
 		nextBtn.addEventListener('click', () => {
-			currentSongIndex = (currentSongIndex + 1) % songList.length;
-			bgMusic.src = songList[currentSongIndex];
+			playIndex++;
+			if(playIndex >= shuffleList.length){
+				shuffleList = shuffleArr(songList);
+				playIndex = 0;
+			}
+			bgMusic.src = shuffleList[playIndex];
 			if(isMusicPlay) bgMusic.play();
 		});
 
@@ -476,15 +500,12 @@
 			enterBtn.disabled = true;
 
 			function update() {
-				// 关键修复：先减 1 → 再显示
 				countdown--;
 				countdownEl.innerText = countdown;
 
 				if (countdown > 0) {
-					// 大于 0 继续倒计时
 					setTimeout(update, 1000);
 				} else {
-					// 等于 0：显示 0 后，启用按钮
 					enterBtn.disabled = false;
 					enterBtn.classList.add('active');
 					enterBtn.querySelector('.zh').textContent = '进入网站';
@@ -492,7 +513,6 @@
 				}
 			}
 
-			// 立即启动第一次
 			update();
 		}
 
