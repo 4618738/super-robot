@@ -2,15 +2,40 @@
 <html lang="zh-CN">
 <head>
 	<meta charset="UTF-8">
-	<!-- 已修复：禁止双指缩放、固定页面不放大缩小 -->
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
 	<title>六一暖心礼物❤️</title>
 	<script defer src="https://cloud.umami.is/script.js" data-website-id="75d9443c-d127-474a-8083-a5f07aca5b8c"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 	<style>
 		* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-		body { background: linear-gradient(135deg, #ffafbd, #ffc3a0,#9dd6ff,#c8f8ff); min-height: 100vh; overflow: hidden; color: #5a3e36; }
-		
+		body { 
+			background: linear-gradient(135deg, #ffafbd, #ffc3a0,#9dd6ff,#c8f8ff); 
+			min-height: 100vh; 
+			overflow: hidden; 
+			color: #5a3e36;
+		}
+
+		/* 进场动画背景 直接用网站主渐变背景 */
+		.assembly-mask{
+			position: fixed;
+			inset: 0;
+			background: linear-gradient(135deg, #ffafbd, #ffc3a0,#9dd6ff,#c8f8ff);
+			z-index: 999999;
+			display: none;
+		}
+		.assembly-mask.active{
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		.block{
+			position: absolute;
+			width: 8px;
+			height: 8px;
+			border-radius: 2px;
+			transition: all 0.6s cubic-bezier(0.22, 1, 0.2, 1);
+		}
+
 		/* 语言切换按钮 右上角 */
 		.lang-switch {
 			position: fixed;
@@ -52,7 +77,7 @@
 		@keyframes cloudMove{0%{transform:translateX(-100%);}100%{transform:translateX(100vw);}}
 		
 		/* 公告页（默认显示） */
-		.notice-page { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 30px; text-align: center; background: rgba(255, 255, 255, 0.9); z-index: 100; position: relative; }
+		.notice-page { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 30px; text-align: center; background: rgba(255, 255, 255, 0.9); z-index: 100; position: relative; transition: opacity 0.3s ease; }
 		.notice-content { max-width: 600px; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
 		.six-one-tag{color:#ff9f43;font-weight:bold;font-size:1.3rem;margin-bottom:10px;}
 		.notice-title { font-size: 2.2rem; margin-bottom: 20px; color: #ff7eb3; }
@@ -74,7 +99,7 @@
 		.gift-container:hover { transform: scale(1.08); animation-play-state: paused; }
 		.gift-lid { position: absolute; top: 0; left: 0; width: 100%; height: 45%; background: linear-gradient(135deg, #ff6aa8, #ff9fcb); border-radius: 10px 10px 0 0; transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1); z-index: 3; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15); }
 		.gift-lid::before { content: ''; position: absolute; width: 100%; height: 20px; background: rgba(255, 255, 255, 0.3); top: 50%; left: 0; transform: translateY(-50%); }
-		.gift-body { position: absolute; bottom: 0; left: 0; width: 100%; height: 55%; background: linear-gradient(135deg, #ff9fcb, #ff6aa8); border-radius: 0 0 10px 10px; transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); }
+		.gift-body { position: absolute; bottom: 0; left: 0; width: 100%; height: 55%; background: linear-gradient(135deg, #ff9fcb, #ff6aa8); border-radius: 0 0 10px 10px; transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s; box-shadow: 0 10px 20px rgba(0, 0, 0, 0, 0.2); }
 		.gift-body::after { content: ''; position: absolute; width: 20px; height: 100%; background: rgba(255,255,255,0.3); left: 50%; top: 0; transform: translateX(-50%); }
 		.gift-bow { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 40px; height: 40px; background: linear-gradient(135deg, #ffd16b, #ffb84d); border-radius: 50%; z-index: 4; transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s; box-shadow: 0 0 20px rgba(255, 209, 107, 0.5); }
 		.gift-bow::before, .gift-bow::after { content: ''; position: absolute; width: 60px; height: 20px; background: linear-gradient(135deg, #ffd16b, #ffb84d); border-radius: 10px; top: 10px; transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s; box-shadow: 0 0 15px rgba(255, 209, 107, 0.4); }
@@ -209,18 +234,21 @@
 	</style>
 </head>
 <body>
+	<!-- 方块组装入场动画 -->
+	<div class="assembly-mask" id="assemblyMask"></div>
+
 	<!-- 右上角语言切换 -->
 	<div class="lang-switch">
 		<button class="lang-btn active" id="zhBtn">中文</button>
 		<button class="lang-btn" id="enBtn">English</button>
 	</div>
 
-	<!-- 切歌按钮组 只留下一首 -->
+	<!-- 切歌按钮组 -->
 	<div class="music-sub-control" id="musicSub">
 		<button id="nextBtn"><i class="fas fa-step-forward"></i></button>
 	</div>
 
-	<!-- 主圆形音乐按钮 -->
+	<!-- 主音乐按钮 -->
 	<button class="music-btn" id="musicBtn">
 		<i class="fas fa-music"></i>
 	</button>
@@ -232,7 +260,7 @@
 	<div class="notice-page" id="noticePage">
 		<div class="notice-content">
 			<div class="six-one-tag zh">✨ 六一儿童节限定礼物 ✨</div>
-			<div class.six-one-tag en">✨ Children's Day Limited Gift ✨</div>
+			<div class="six-one-tag en">✨ Children's Day Limited Gift ✨</div>
 
 			<h2 class="notice-title zh">使用须知</h2>
 			<h2 class="notice-title en">Notice</h2>
@@ -260,8 +288,8 @@
 				<span class="en">Enter after 3s</span>
 			</button>
 		</div>
-		<div class="copyright zh">© 2024 暖心礼物 | 六一限定V1.6.0 大魔王.by 版权所有</div>
-		<div class="copyright en">© 2024 Warm Gift | Children's Day V1.6.0 All Rights Reserved</div>
+		<div class="copyright zh">© 2024 暖心礼物 | 六一限定 大魔王.by 版权所有</div>
+		<div class="copyright en">© 2024 Warm Gift | Children's Day All Rights Reserved</div>
 	</div>
 	
 	<!-- 礼物页 -->
@@ -288,12 +316,12 @@
 			</div>
 		</div>
 		<div class="version-info" id="versionGift">
-			<div class="version zh">当前版本号 V1.6.0 六一限定版</div>
-			<div class="version en">Version V1.6.0 Children's Day</div>
+			<div class="version zh">六一限定版</div>
+			<div class="version en">Children's Day Version</div>
 			<div class="author">大魔王.by</div>
 		</div>
-		<div class="copyright zh">© 2024 暖心礼物 | 六一限定V1.6.0 大魔王.by 版权所有</div>
-		<div class="copyright en">© 2024 Warm Gift | Children's Day V1.6.0 All Rights Reserved</div>
+		<div class="copyright zh">© 2024 暖心礼物 | 六一限定 大魔王.by 版权所有</div>
+		<div class="copyright en">© 2024 Warm Gift | Children's Day All Rights Reserved</div>
 	</div>
 	
 	<!-- 消息页 -->
@@ -305,12 +333,12 @@
 			<span class="en">Back</span>
 		</button>
 		<div class="version-info" id="versionMsg">
-			<div class="version zh">当前版本号 V1.6.0 六一限定版</div>
-			<div class="version en">Version V1.6.0 Children's Day</div>
+			<div class="version zh">六一限定版</div>
+			<div class="version en">Children's Day Version</div>
 			<div class="author">大魔王.by</div>
 		</div>
-		<div class="copyright zh">© 2024 暖心礼物 | 六一限定V1.6.0 大魔王.by 版权所有</div>
-		<div class="copyright en">© 2024 Warm Gift | Children's Day V1.6.0 All Rights Reserved</div>
+		<div class="copyright zh">© 2024 暖心礼物 | 六一限定 大魔王.by 版权所有</div>
+		<div class="copyright en">© 2024 Warm Gift | Children's Day All Rights Reserved</div>
 	</div>
 
 	<script>
@@ -323,11 +351,9 @@
 			"http://music.163.com/song/media/outer/url?id=2096025241.mp3"
 		];
 
-		// 洗牌后播放队列、当前播放索引
 		let shuffleList = [];
 		let playIndex = 0;
 
-		// 数组洗牌算法
 		function shuffleArr(arr){
 			let newArr = [...arr];
 			for(let i = newArr.length - 1; i > 0; i--){
@@ -337,7 +363,6 @@
 			return newArr;
 		}
 
-		// 初始化第一次洗牌
 		shuffleList = shuffleArr(songList);
 		playIndex = 0;
 
@@ -347,10 +372,8 @@
 		bgMusic.volume = 0.4;
 		let isMusicPlay = false;
 
-		// 播放结束 → 按洗牌列表顺序播，播完整轮重新洗牌
 		bgMusic.addEventListener('ended', function(){
 			playIndex++;
-			// 一轮播完，重新洗牌从头来
 			if(playIndex >= shuffleList.length){
 				shuffleList = shuffleArr(songList);
 				playIndex = 0;
@@ -374,7 +397,6 @@
 			musicSub.classList.toggle('show');
 		});
 
-		// 下一首 → 按洗牌列表顺序切，不重复，整轮完重新洗牌
 		nextBtn.addEventListener('click', () => {
 			playIndex++;
 			if(playIndex >= shuffleList.length){
@@ -476,7 +498,6 @@
 		zhBtn.addEventListener('click',updateMsgLang);
 		enBtn.addEventListener('click',updateMsgLang);
 
-		// ========== 修复：倒计时显示 0 完整逻辑 ==========
 		const countdownEl = document.getElementById('countdown');
 		const enterBtn = document.getElementById('enterBtn');
 		const noticePage = document.getElementById('noticePage');
@@ -488,38 +509,112 @@
 		const backBtn = document.getElementById('backBtn');
 		const versionGift = document.getElementById('versionGift');
 		const versionMsg = document.getElementById('versionMsg');
+		const assemblyMask = document.getElementById('assemblyMask');
 		
-		let countdown = 3;      // 初始 3
-		let countdownStarted = false;
 		let isOpened = false;
 		let currentMsgIndex = 0;
 
-		function initCountdown() {
-			if (countdownStarted) return;
-			countdownStarted = true;
-			enterBtn.disabled = true;
-
-			function update() {
-				countdown--;
-				countdownEl.innerText = countdown;
-
-				if (countdown > 0) {
-					setTimeout(update, 1000);
-				} else {
+		function startCountdown() {
+			const totalSeconds = 3;
+			const endTime = Date.now() + totalSeconds * 1000;
+			const interval = setInterval(() => {
+				const now = Date.now();
+				const remain = Math.ceil((endTime - now) / 1000);
+				if (remain <= 0) {
+					clearInterval(interval);
+					countdownEl.innerText = '0';
 					enterBtn.disabled = false;
 					enterBtn.classList.add('active');
 					enterBtn.querySelector('.zh').textContent = '进入网站';
 					enterBtn.querySelector('.en').textContent = 'Enter';
+					return;
 				}
-			}
-
-			update();
+				countdownEl.innerText = remain;
+			}, 100);
 		}
-
-		initCountdown();
+		window.addEventListener('DOMContentLoaded', startCountdown);
 		messageCounter.innerText = `1 / ${comfortingMessages.length}`;
 
-		// 气球/云朵/星星/花瓣
+		// 加密爱心点位，生成更多方块
+		function getHeartPoints(centerX, centerY, size){
+			let points = [];
+			for(let t = 0; t < Math.PI * 2; t += 0.08){
+				let x = 16 * Math.pow(Math.sin(t),3);
+				let y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+				points.push({
+					x: centerX + x * size,
+					y: centerY + y * size
+				});
+			}
+			return points;
+		}
+
+		// dmwzz 字母点位 适配多方块
+		function getTextPoints(centerX, centerY){
+			let arr = [];
+			// d
+			for(let i=0;i<12;i++) arr.push({x:centerX-240 + i*7, y:centerY-20});
+			// m
+			for(let i=0;i<14;i++) arr.push({x:centerX-160 + i*7, y:centerY-20});
+			// w
+			for(let i=0;i<14;i++) arr.push({x:centerX-70 + i*7, y:centerY-20});
+			// z
+			for(let i=0;i<12;i++) arr.push({x:centerX+20 + i*7, y:centerY-20});
+			// z
+			for(let i=0;i<12;i++) arr.push({x:centerX+100 + i*7, y:centerY-20});
+			return arr;
+		}
+
+		function startAssemblyAnimate(){
+			assemblyMask.innerHTML = '';
+			assemblyMask.classList.add('active');
+			const cx = window.innerWidth / 2;
+			const cy = window.innerHeight / 2;
+			const heartPoints = getHeartPoints(cx, cy, 6);
+			const textPoints = getTextPoints(cx, cy - 30);
+
+			const colors = ['#ff6aa8','#ffafbd','#ffd16b','#9dd6ff','#c296ff','#84e8c4'];
+			let blockList = [];
+
+			heartPoints.forEach((pos,idx)=>{
+				let b = document.createElement('div');
+				b.className = 'block';
+				b.style.background = colors[Math.floor(Math.random()*colors.length)];
+				b.style.left = Math.random()*window.innerWidth + 'px';
+				b.style.top = Math.random()*window.innerHeight + 'px';
+				assemblyMask.appendChild(b);
+				blockList.push({el:b, heart:pos, text:textPoints[idx%textPoints.length]});
+			});
+
+			// 拼成爱心
+			setTimeout(()=>{
+				blockList.forEach(item=>{
+					item.el.style.left = item.heart.x + 'px';
+					item.el.style.top = item.heart.y + 'px';
+				});
+			}, 200);
+
+			// 爱心转成 dmwzz 字母
+			setTimeout(()=>{
+				blockList.forEach(item=>{
+					item.el.style.left = item.text.x + 'px';
+					item.el.style.top = item.text.y + 'px';
+				});
+			}, 1100);
+
+			// 动画结束关闭遮罩进入主页
+			setTimeout(()=>{
+				assemblyMask.classList.remove('active');
+				noticePage.style.opacity = 0;
+				setTimeout(()=>{
+					noticePage.style.display = 'none';
+					giftPage.style.display = 'flex';
+					versionGift.style.display = 'block';
+				},200);
+			},1900);
+		}
+
+		// 气球云朵星星花瓣
 		function createBalloons(){
 			const colors = ['#ff6b9d','#6bcbff','#ffd86b','#9dffc2','#d89dff'];
 			for(let i=0;i<8;i++){
@@ -582,34 +677,14 @@
 			}
 		}
 
-		// 消息轮播
-		function startMsgLoop() {
-			renderMsg();
-			setInterval(() => {
-				const activeMsg = document.querySelector('.message.active');
-				if (activeMsg) activeMsg.remove();
-				currentMsgIndex = (currentMsgIndex + 1) % comfortingMessages.length;
-				messageCounter.innerText = `${currentMsgIndex + 1} / ${comfortingMessages.length}`;
-				renderMsg();
-			}, 2200);
-		}
-
-		function renderMsg() {
-			const msg = document.createElement('div');
-			msg.className = 'message';
-			msg.innerHTML = `<i class="fas fa-heart"></i> ${comfortingMessages[currentMsgIndex]}`;
-			messagesContainer.appendChild(msg);
-			setTimeout(() => msg.classList.add('active'), 100);
-		}
-
-		// 页面切换
+		// 点击进入 触发方块组装动画
 		enterBtn.addEventListener('click', () => {
-			noticePage.style.opacity = 0;
-			setTimeout(() => {
-				noticePage.style.display = 'none';
-				giftPage.style.display = 'flex';
-				versionGift.style.display = 'block';
-			}, 400);
+			if(!isMusicPlay){
+				bgMusic.play();
+				isMusicPlay = true;
+				musicBtn.innerHTML = '<i class="fas fa-pause"></i>';
+			}
+			startAssemblyAnimate();
 		});
 
 		giftBox.addEventListener('click', () => {
@@ -628,6 +703,24 @@
 				}, 800);
 			}, 600);
 		});
+
+		function startMsgLoop() {
+			renderMsg();
+			setInterval(() => {
+				const activeMsg = document.querySelector('.message.active');
+				if (activeMsg) activeMsg.remove();
+				currentMsgIndex = (currentMsgIndex + 1) % comfortingMessages.length;
+				messageCounter.innerText = `${currentMsgIndex + 1} / ${comfortingMessages.length}`;
+				renderMsg();
+			}, 2200);
+		}
+		function renderMsg() {
+			const msg = document.createElement('div');
+			msg.className = 'message';
+			msg.innerHTML = `<i class="fas fa-heart"></i> ${comfortingMessages[currentMsgIndex]}`;
+			messagesContainer.appendChild(msg);
+			setTimeout(() => msg.classList.add('active'), 100);
+		}
 
 		backBtn.addEventListener('click', () => {
 			messagesPage.style.opacity = 0;
