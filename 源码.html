@@ -81,6 +81,33 @@
 		}
 		.back-btn:hover { background: white; transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); }
 		
+		/* 古诗词展示：无背景，黑色字体，紧凑滚动 */
+		.poem-display {
+			position: fixed; top: 60px; left: 20px;
+			background: transparent;
+			color: #1a1a1a;
+			font-size: 1rem;
+			padding: 10px 18px;
+			border-radius: 25px;
+			box-shadow: none;
+			z-index: 101;
+			max-width: 300px;
+			line-height: 1.5;
+			pointer-events: none;
+			overflow: hidden;
+			white-space: nowrap;
+		}
+		.poem-inner {
+			display: inline-block;
+			white-space: nowrap;
+			will-change: transform;
+		}
+		/* 滚动动画（从右到左单次，4秒紧凑） */
+		@keyframes scrollText {
+			0% { transform: translateX(100%); }
+			100% { transform: translateX(-100%); }
+		}
+
 		@keyframes floatSoft { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 		@keyframes glow { 0% { box-shadow: 0 0 20px rgba(255, 126, 179, 0.2); } 100% { box-shadow: 0 0 40px rgba(255, 126, 179, 0.4); } }
 		@keyframes pulseSoft { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
@@ -98,6 +125,7 @@
 			.message i { font-size: 1.5rem; }
 			.back-btn { top: 15px; left: 15px; padding: 10px 20px; }
 			.lang-switch { top:15px;right:15px; } .lang-btn { padding:5px 10px;font-size:0.8rem; }
+			.poem-display { top: 55px; left: 15px; font-size: 0.9rem; padding: 8px 15px; max-width: 250px; }
 		}
 		@media (max-width: 480px) {
 			.notice-title { font-size: 1.5rem; } .notice-text { font-size: 0.9rem; }
@@ -106,6 +134,7 @@
 			.message { font-size: 1.1rem; max-width: 350px; padding: 15px 25px; margin: 0 15px; }
 			.message i { font-size: 1.3rem; }
 			.back-btn { top: 10px; left: 10px; padding: 8px 16px; font-size: 0.9rem; }
+			.poem-display { top: 50px; left: 10px; font-size: 0.8rem; padding: 6px 12px; max-width: 200px; }
 		}
 		
 		.version-info { position: fixed; bottom: 20px; right: 20px; text-align: right; color: #7a5c4d; z-index: 9; display: none; font-weight: 500; }
@@ -160,6 +189,9 @@
 
 	<div class="rainbow"></div>
 
+	<!-- 古诗词展示（紧凑滚动） -->
+	<div class="poem-display" id="poemDisplay"><span class="poem-inner" id="poemInner"></span></div>
+
 	<div class="notice-page" id="noticePage">
 		<div class="notice-content">
 			<div class="six-one-tag zh">✨ 六一儿童节限定礼物 ✨</div>
@@ -206,9 +238,10 @@
 				<p class="en">Made by Demon. Happy Children's Day</p>
 			</div>
 		</div>
+		<!-- ===== 版本号改为 V1.8.1 ===== -->
 		<div class="version-info" id="versionGift">
-			<div class="version zh">V1.7.1 六一限定版</div>
-			<div class="version en">V1.7.1 Children's Day Version</div>
+			<div class="version zh">V1.8.1 六一限定版</div>
+			<div class="version en">V1.8.1 Children's Day Version</div>
 			<div class="author">大魔王.by</div>
 		</div>
 		<div class="copyright zh">© 2024 暖心礼物 | 六一限定 大魔王.by 版权所有</div>
@@ -222,9 +255,10 @@
 			<span class="zh">返回礼物盒</span>
 			<span class="en">Back</span>
 		</button>
+		<!-- ===== 版本号改为 V1.8.1 ===== -->
 		<div class="version-info" id="versionMsg">
-			<div class="version zh">V1.7.1 六一限定版</div>
-			<div class="version en">V1.7.1 Children's Day Version</div>
+			<div class="version zh">V1.8.1 六一限定版</div>
+			<div class="version en">V1.8.1 Children's Day Version</div>
 			<div class="author">大魔王.by</div>
 		</div>
 		<div class="copyright zh">© 2024 暖心礼物 | 六一限定 大魔王.by 版权所有</div>
@@ -413,6 +447,47 @@
 		let currentMsgIndex = 0;
 		let msgLoopInterval = null;
 
+		// ===== 古诗词极致紧凑滚动 =====
+		const poemDisplay = document.getElementById('poemDisplay');
+		const poemInner = document.getElementById('poemInner');
+		const poems = [
+			"🌸 百花开时我不开，我若开时都吓杀。",
+			"🌿 山重水复疑无路，柳暗花明又一村。",
+			"🌙 欲穷千里目，更上一层楼。",
+			"⭐ 会当凌绝顶，一览众山小。",
+			"🍃 沉舟侧畔千帆过，病树前头万木春。",
+			"🌊 长风破浪会有时，直挂云帆济沧海。",
+			"🌻 千磨万击还坚劲，任尔东西南北风。",
+			"🌸 不经一番寒彻骨，怎得梅花扑鼻香。",
+			"🕊️ 海内存知己，天涯若比邻。",
+			"🍂 莫愁前路无知己，天下谁人不识君。"
+		];
+		let poemIndex = Math.floor(Math.random() * poems.length);
+		poemInner.textContent = poems[poemIndex];
+
+		function startPoemScroll() {
+			poemInner.style.transform = 'translateX(100%)';
+			poemInner.style.animation = 'none';
+			poemInner.offsetWidth;
+			poemInner.style.animation = 'scrollText 4s linear 1';
+		}
+
+		poemInner.addEventListener('animationend', function(e) {
+			if (e.animationName === 'scrollText') {
+				poemInner.style.animation = 'none';
+				let nextIndex;
+				do {
+					nextIndex = Math.floor(Math.random() * poems.length);
+				} while (nextIndex === poemIndex && poems.length > 1);
+				poemIndex = nextIndex;
+				poemInner.textContent = poems[poemIndex];
+				startPoemScroll();
+			}
+		});
+
+		startPoemScroll();
+		// ===== 古诗词逻辑结束 =====
+
 		function startCountdown() {
 			const totalSeconds = 3;
 			const endTime = Date.now() + totalSeconds * 1000;
@@ -529,16 +604,14 @@
 			}
 		}
 
-		// ========== 修复自动播放：强制加载并重试 ==========
 		enterBtn.addEventListener('click', () => {
 			if(!isMusicPlay){
-				bgMusic.load();   // 确保重新加载资源
+				bgMusic.load();
 				bgMusic.play().then(() => {
 					isMusicPlay = true;
 					musicBtn.innerHTML = '<i class="fas fa-pause"></i>';
 					musicSub.classList.add('show');
 				}).catch(() => {
-					// 第一次失败，延迟 200ms 再试一次
 					setTimeout(() => {
 						bgMusic.play().then(() => {
 							isMusicPlay = true;
